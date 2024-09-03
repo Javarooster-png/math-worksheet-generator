@@ -1,6 +1,7 @@
 import random
 from fpdf import FPDF
 import argparse
+from fpdf.enums import XPos, YPos
 
 class Worksheet(FPDF):
     def __init__(self, operator, *args, **kwargs):
@@ -9,13 +10,13 @@ class Worksheet(FPDF):
 
     def header(self):
         # Title and header section
-        self.set_font("Arial", '', 12)
-        self.cell(0, 10, 'Name: ________________________', ln=True, align='L')
-        self.cell(0, 10, 'Date: _________________________', ln=True, align='L')
+        self.set_font("helvetica", '', 12)
+        self.cell(0, 10, 'Name: ________________________', new_x=XPos.LMARGIN, new_y=YPos.NEXT, align='L')
+        self.cell(0, 10, 'Date: _________________________', new_x=XPos.LMARGIN, new_y=YPos.NEXT, align='L')
         self.ln(5)
-        self.set_font("Arial", 'B', 18)
+        self.set_font("helvetica", 'B', 18)
         title = "Subtraction" if self.operator == '-' else "Addition" if self.operator == '+' else "Division" if self.operator == '/' else "Multiplication"
-        self.cell(0, 10, title, ln=True, align='C')
+        self.cell(0, 10, title, new_x=XPos.LMARGIN, new_y=YPos.NEXT, align='C')
         self.ln(5)
         self.set_line_width(0.5)
         self.line(10, 48, 200, 48)  # Correct placement of the line
@@ -24,23 +25,20 @@ class Worksheet(FPDF):
     def footer(self):
         # Footer section
         self.set_y(-15)
-        self.set_font("Arial", 'I', 10)
-        self.cell(0, 20, 'AJ Otto', 0, 0, 'C')
+        self.set_font("helvetica", 'I', 10)
+        self.cell(0, 20, 'AJ Otto', new_x=XPos.RIGHT, new_y=YPos.TOP, align='C')
 
     def add_problem(self, top_num, bottom_num, x_offset, y_offset):
-        if self.operator == '-' or '+' or 'x':
+        if self.operator in ['-', '+', 'x']:
             if top_num < bottom_num:
                 top_num, bottom_num = bottom_num, top_num
-        #elif self.operator == '/':
-            # Ensure that top_num is divisible by bottom_num with no remainder
-            #top_num = bottom_num * random.randint(1, 10)
 
         self.set_xy(x_offset, y_offset)  # Set the position for the current problem
 
         problem_width = 25  # Width allocated for each problem
         
         # Top number
-        self.set_font("Arial", '', 16)
+        self.set_font("helvetica", '', 16)
         self.cell(problem_width, 10, f"{top_num}", align='R')
         self.ln(7)
 
@@ -53,7 +51,7 @@ class Worksheet(FPDF):
         # Draw the line beneath the numbers
         self.set_x(x_offset)
         self.cell(problem_width, 5, '', align='R')
-        self.line(x_offset, self.get_y() + 4, x_offset + problem_width, self.get_y() + 4)  # Lower the line slightly
+        self.line(x_offset, self.get_y() + 4, x_offset + problem_width, self.get_y() + 4)  # Line pos
         self.ln(15)  # Add space after the problem for clarity
 
     def add_problem_row(self, num_problems):
@@ -64,13 +62,12 @@ class Worksheet(FPDF):
             x_offset = start_x + (i * 45)  # Adjust horizontal spacing
             bottom_num = random.randint(*bottom_range)
             top_num = random.randint(*top_range)
-            #top_num = bottom_num * random.randint(1, 10)  # Ensure a perfect division
             self.add_problem(top_num, bottom_num, x_offset, start_y)
         
         self.set_y(start_y + 30)  # Move to the next row
 
 # Customizable range for the numbers
-top_range = (0, 10)  # Start from 1 to avoid division by zero
+top_range = (0, 10)
 bottom_range = (0, 10)
 
 def main():
@@ -90,7 +87,7 @@ def main():
         operator = 'x'
 
     # Generate and save five different worksheets
-    for i in range(1, 6):  # Loop from 1 to 5
+    for i in range(1, 6):
         pdf = Worksheet(operator)
         pdf.add_page()
 
