@@ -3,7 +3,7 @@ I made this because the website I was using to generate math worksheets wanted m
 
 This is still a wip program. It can not generate division problems yet. Designed for elementary schoolers to practice their math skills. 
 
-dependencies: python3, fpdf
+dependencies: python3, fpdf2
 
 Usage:
 python3 math_gen.py will generate multiplication problems by default
